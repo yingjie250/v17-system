@@ -53,22 +53,20 @@ def analyze(arr):
 
 print("✅ 程序启动成功（云端运行中）")
 
+last_data = None
+
 while True:
-    try:
-        data = get_data()
-        print("当前数据:", data)
+    data = get_data()
+    
+    print("当前数据:", data)
 
-        if data and data != last_data:
-            last_data = data
+    if data and data != last_data:
+        msg = f"🔥新数据: {data}"
+        send(msg)
+        print("已发送:", msg)
+        last_data = data
 
-            ok, score = analyze(data)
-
-            print("状态:", score)
-
-            if ok:
-                send(f"🔥 云端信号\n数据：{data}\n状态：{score}\n建议：做（重仓）")
-
-        time.sleep(15)
+    time.sleep(10)
 
     except Exception as e:
         print("主循环错误:", e)
