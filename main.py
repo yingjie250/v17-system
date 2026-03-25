@@ -13,15 +13,19 @@ def send(msg):
     requests.post(url, data={"chat_id": CHAT_ID, "text": msg})
 
 def get_data():
-    url = "https://zl288.app/jnd28.html"
-    headers = {"User-Agent": "Mozilla/5.0"}
-    r = requests.get(url, headers=headers)
-    soup = BeautifulSoup(r.text, "html.parser")
-    text = soup.get_text()
+    try:
+        url = "https://zl288.app/jnd28.html"
+        headers = {"User-Agent": "Mozilla/5.0"}
+        r = requests.get(url, headers=headers, timeout=10)
 
-    match = re.search(r'(\d)\+(\d)\+(\d)=', text)
-    if match:
-        return tuple(map(int, match.groups()))
+        text = r.text
+
+        match = re.search(r'(\d)\+(\d)\+(\d)=', text)
+        if match:
+            return tuple(map(int, match.groups()))
+    except:
+        return None
+
     return None
 
 def analyze(arr):
