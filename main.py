@@ -67,13 +67,20 @@ while True:
 
     except Exception as e:
         print("主循环错误:", e)
-        time.sleep(5)
+        last_data = None
+send("🔥启动成功🔥")
 while True:
     data = get_data()
     
-    if data:
-        msg = f"最新数据: {data}"
+    print("当前数据:", data)
+
+    if data and data != last_data:
+        msg = f"🔥新数据: {data}"
         send(msg)
+        print("已发送:", msg)
+        last_data = data
+
+    time.sleep(10)
     
     time.sleep(10)
 send("测试成功🔥")
