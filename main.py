@@ -68,4 +68,4 @@ while True:
     except Exception as e:
         print("主循环错误:", e)
         time.sleep(5)
-send("测试成功🔥")
+send("🔥强制测试🔥")
