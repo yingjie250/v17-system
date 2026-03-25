@@ -72,7 +72,7 @@ send("🔥启动成功🔥")
 while True:
     data = get_data()
     
-    print("当前数据:", data)
+    print("已发送测试:", data)
 
     if data and data != last_data:
         msg = f"🔥新数据: {data}"
