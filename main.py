@@ -23,12 +23,12 @@ def get_data():
         r = requests.get(url, headers=headers, timeout=10)
 
         text = r.text
-        match = re.search(r'(\d)\+(\d)\+(\d)=', text)
 
+        match = re.search(r'(\d)\+(\d)\+(\d)=', text)
         if match:
             return tuple(map(int, match.groups()))
-    except Exception as e:
-        print("抓取失败:", e)
+    except:
+        return None
 
     return None
 
