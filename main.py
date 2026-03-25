@@ -47,7 +47,7 @@ def analyze(arr):
     return False, score
 
 print("✅ 程序启动成功（云端运行中）")
-
+send("🔥强制测试🔥")
 while True:
     try:
         data = get_data()
