@@ -2,15 +2,19 @@ import requests
 from bs4 import BeautifulSoup
 import time
 import re
+import os
 
-BOT_TOKEN = "填你的token"
-CHAT_ID = "填你的chat_id"
+BOT_TOKEN = os.getenv("BOT_TOKEN")
+CHAT_ID = os.getenv("CHAT_ID")
 
 last_data = None
 
 def send(msg):
-    url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage"
-    requests.post(url, data={"chat_id": CHAT_ID, "text": msg})
+    try:
+        url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage"
+        requests.post(url, data={"chat_id": CHAT_ID, "text": msg})
+    except Exception as e:
+        print("发送失败:", e)
 
 def get_data():
     try:
@@ -19,12 +23,12 @@ def get_data():
         r = requests.get(url, headers=headers, timeout=10)
 
         text = r.text
-
         match = re.search(r'(\d)\+(\d)\+(\d)=', text)
+
         if match:
             return tuple(map(int, match.groups()))
-    except:
-        return None
+    except Exception as e:
+        print("抓取失败:", e)
 
     return None
 
@@ -42,15 +46,25 @@ def analyze(arr):
         return True, score
     return False, score
 
+print("✅ 程序启动成功（云端运行中）")
+
 while True:
-    data = get_data()
+    try:
+        data = get_data()
+        print("当前数据:", data)
 
-    if data and data != last_data:
-        last_data = data
+        if data and data != last_data:
+            last_data = data
 
-        ok, score = analyze(data)
+            ok, score = analyze(data)
 
-        if ok:
-            send(f"🔥 云端信号\n数据：{data}\n状态：{score}\n建议：做（重仓）")
+            print("状态:", score)
 
-    time.sleep(20)
+            if ok:
+                send(f"🔥 云端信号\n数据：{data}\n状态：{score}\n建议：做（重仓）")
+
+        time.sleep(15)
+
+    except Exception as e:
+        print("主循环错误:", e)
+        time.sleep(5)
