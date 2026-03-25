@@ -54,20 +54,21 @@ def analyze(arr):
 print("✅ 程序启动成功（云端运行中）")
 
 last_data = None
-send("🔥启动成功🔥")
+
+last_data = None
+
 while True:
-    try:
-        data = get_data()
+    data = get_data()
+    
+    print("当前数据:", data)
 
-        if data and data != last_data:
-            last_data = data
+    if data and data != last_data:
+        msg = f"🔥新数据: {data}"
+        send(msg)
+        print("已发送:", msg)
+        last_data = data
 
-            ok, score = analyze(data)
-
-            if ok:
-                send(f"🔥信号\n数据:{data}\n评分:{score}")
-
-        time.sleep(15)
+    time.sleep(10)
 
     except Exception as e:
         print("主循环错误:", e)
@@ -75,3 +76,5 @@ while True:
 send("🔥我活了🔥")
 print("BOT:", BOT_TOKEN)
 print("CHAT:", CHAT_ID)
+send("🔥启动成功🔥")
+print("已发送测试")
