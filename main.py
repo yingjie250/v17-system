@@ -1,5 +1,3 @@
-print("BOT:", BOT_TOKEN)
-print("CHAT:", CHAT_ID)
 import requests
 from bs4 import BeautifulSoup
 import time
@@ -70,3 +68,4 @@ while True:
     except Exception as e:
         print("主循环错误:", e)
         time.sleep(5)
+send("测试成功🔥")
