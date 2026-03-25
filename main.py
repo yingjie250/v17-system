@@ -2,36 +2,34 @@ import requests
 from bs4 import BeautifulSoup
 import time
 import re
-import os
+import threading
 
-BOT_TOKEN = os.getenv("BOT_TOKEN")
-CHAT_ID = os.getenv("CHAT_ID")
+from telegram import Update
+from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, filters, ContextTypes
 
+TOKEN = "你的TOKEN"
+
+running = False
 last_data = None
 
-def send(msg):
-    try:
-        url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage"
-        requests.post(url, data={"chat_id": CHAT_ID, "text": msg})
-    except Exception as e:
-        print("发送失败:", e)
+# 发送消息
+async def send_msg(app, chat_id, msg):
+    await app.bot.send_message(chat_id=chat_id, text=msg)
 
+# 抓数据
 def get_data():
-    try:
-        url = "https://zl288.app/jnd28.html"
-        headers = {"User-Agent": "Mozilla/5.0"}
-        r = requests.get(url, headers=headers, timeout=10)
+    url = "https://zl288.app/jnd28.html"
+    headers = {"User-Agent": "Mozilla/5.0"}
+    r = requests.get(url, headers=headers)
+    soup = BeautifulSoup(r.text, "html.parser")
+    text = soup.get_text()
 
-        text = r.text
-        match = re.search(r'(\d)\+(\d)\+(\d)=', text)
-
-        if match:
-            return tuple(map(int, match.groups()))
-    except Exception as e:
-        print("抓取失败:", e)
-
+    match = re.search(r'(\d)\+(\d)\+(\d)=', text)
+    if match:
+        return tuple(map(int, match.groups()))
     return None
 
+# 分析
 def analyze(arr):
     count43 = sum(1 for x in arr if x in [3,4])
     count89 = sum(1 for x in arr if x in [8,9])
@@ -46,41 +44,64 @@ def analyze(arr):
         return True, score
     return False, score
 
-print("✅ 程序启动成功（云端运行中）")
+# 后台监听线程
+def worker(app, chat_id):
+    global running, last_data
 
-while True:
-    try:
-        data = get_data()
-        print("当前数据:", data)
+    while running:
+        try:
+            data = get_data()
 
-        if data and data != last_data:
-            last_data = data
+            if data and data != last_data:
+                last_data = data
+                ok, score = analyze(data)
 
-            ok, score = analyze(data)
+                if ok:
+                    msg = f"🔥 云端信号\n数据：{data}\n状态：{score}\n建议：做（重仓）"
+                    app.create_task(send_msg(app, chat_id, msg))
 
-            print("状态:", score)
+        except Exception as e:
+            print("错误：", e)
 
-            if ok:
-                send(f"🔥 云端信号\n数据：{data}\n状态：{score}\n建议：做（重仓）")
+        time.sleep(20)
 
-        time.sleep(15)
+# /start
+async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_text(
+        "🔥 V17系统\n\n"
+        "发送：\n"
+        "开启 - 开始监听\n"
+        "停止 - 停止监听"
+    )
 
-    except Exception as e:
-        print("主循环错误:", e)
-        last_data = None
-send("🔥启动成功🔥")
-while True:
-    data = get_data()
-    
-    print("已发送测试:", data)
+# 控制
+async def handle(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    global running
 
-    if data and data != last_data:
-        msg = f"🔥新数据: {data}"
-        send(msg)
-        print("已发送:", msg)
-        last_data = data
+    text = update.message.text
+    chat_id = update.effective_chat.id
+    app = context.application
 
-    time.sleep(10)
-    
-    time.sleep(10)
-send("测试成功🔥")
+    if text == "开启":
+        if not running:
+            running = True
+            threading.Thread(target=worker, args=(app, chat_id)).start()
+            await update.message.reply_text("✅ 已开启监听")
+        else:
+            await update.message.reply_text("已经在运行了")
+
+    elif text == "停止":
+        running = False
+        await update.message.reply_text("🛑 已停止")
+
+    else:
+        await update.message.reply_text("请输入：开启 或 停止")
+
+# 启动
+app = ApplicationBuilder().token(TOKEN).build()
+
+app.add_handler(CommandHandler("start", start))
+app.add_handler(MessageHandler(filters.TEXT, handle))
+
+print("🚀 V17系统运行中...")
+app.run_polling()
