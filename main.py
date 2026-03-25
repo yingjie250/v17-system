@@ -73,3 +73,11 @@ while True:
         print("主循环错误:", e)
         time.sleep(5)
 send("🔥强制测试🔥")
+while True:
+    data = get_data()
+    
+    if data:
+        msg = f"最新数据: {data}"
+        send(msg)
+    
+    time.sleep(10)
