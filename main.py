@@ -2,26 +2,34 @@ import requests
 from bs4 import BeautifulSoup
 import time
 import re
+import os
 
-BOT_TOKEN = "填你的token"
-CHAT_ID = "填你的chat_id"
+BOT_TOKEN = os.getenv("BOT_TOKEN")
+CHAT_ID = os.getenv("CHAT_ID")
 
 last_data = None
 
 def send(msg):
-    url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage"
-    requests.post(url, data={"chat_id": CHAT_ID, "text": msg})
+    try:
+        url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage"
+        requests.post(url, data={"chat_id": CHAT_ID, "text": msg})
+    except:
+        pass
 
 def get_data():
-    url = "https://zl288.app/jnd28.html"
-    headers = {"User-Agent": "Mozilla/5.0"}
-    r = requests.get(url, headers=headers)
-    soup = BeautifulSoup(r.text, "html.parser")
-    text = soup.get_text()
+    try:
+        url = "https://zl288.app/jnd28.html"
+        headers = {"User-Agent": "Mozilla/5.0"}
+        r = requests.get(url, headers=headers, timeout=10)
 
-    match = re.search(r'(\d)\+(\d)\+(\d)=', text)
-    if match:
-        return tuple(map(int, match.groups()))
+        text = r.text
+        match = re.search(r'(\d)\+(\d)\+(\d)=', text)
+
+        if match:
+            return tuple(map(int, match.groups()))
+    except:
+        return None
+
     return None
 
 def analyze(arr):
@@ -38,18 +46,23 @@ def analyze(arr):
         return True, score
     return False, score
 
+print("系统启动成功")
+
 while True:
-    data = get_data()
+    try:
+        data = get_data()
 
-    if data and data != last_data:
-        last_data = data
+        if data and data != last_data:
+            last_data = data
 
-        ok, score = analyze(data)
+            ok, score = analyze(data)
 
-        if ok:
-            send(f"🔥 云端信号\n数据：{data}\n状态：{score}\n建议：做（重仓）")
+            if ok:
+                send(f"🔥信号\n数据:{data}\n评分:{score}")
 
-    time.sleep(20)
+        time.sleep(15)
 
+    except:
+        time.sleep(5)
 print("🚀 V17系统运行中...")
 app.run_polling()
