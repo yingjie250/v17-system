@@ -47,7 +47,7 @@ def analyze(arr):
     return False, score
 
 print("✅ 程序启动成功（云端运行中）")
-send("测试成功🔥")
+
 while True:
     try:
         data = get_data()
@@ -76,3 +76,4 @@ while True:
         send(msg)
     
     time.sleep(10)
+send("测试成功🔥")
