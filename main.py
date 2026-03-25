@@ -11,8 +11,13 @@ last_data = None
 
 def send(msg):
     try:
+        print("准备发送:", msg)
         url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage"
-        requests.post(url, data={"chat_id": CHAT_ID, "text": msg})
+        res = requests.post(url, data={
+            "chat_id": CHAT_ID,
+            "text": msg
+        })
+        print("返回:", res.text)
     except Exception as e:
         print("发送失败:", e)
 
