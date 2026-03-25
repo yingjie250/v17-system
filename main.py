@@ -47,7 +47,7 @@ def analyze(arr):
     return False, score
 
 print("✅ 程序启动成功（云端运行中）")
-
+send("测试成功🔥")
 while True:
     try:
         data = get_data()
@@ -68,3 +68,11 @@ while True:
     except Exception as e:
         print("主循环错误:", e)
         time.sleep(5)
+while True:
+    data = get_data()
+    
+    if data:
+        msg = f"最新数据: {data}"
+        send(msg)
+    
+    time.sleep(10)
