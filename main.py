@@ -54,7 +54,7 @@ def analyze(arr):
 print("✅ 程序启动成功（云端运行中）")
 
 last_data = None
-
+send("🔥启动成功🔥")
 while True:
     data = get_data()
     
