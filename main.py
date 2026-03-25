@@ -57,19 +57,21 @@ last_data = None
 
 last_data = None
 
+print("系统启动成功")
+
 while True:
-    data = get_data()
-    
-    print("当前数据:", data)
+    try:
+        data = get_data()
 
-    if data and data != last_data:
-        msg = f"🔥新数据: {data}"
-        send(msg)
-        print("已发送:", msg)
-        last_data = data
+        if data and data != last_data:
+            last_data = data
 
-    time.sleep(10)
+            ok, score = analyze(data)
 
+            if ok:
+                send(f"🔥信号\n数据:{data}\n评分:{score}")
+
+        time.sleep(15)
     except Exception as e:
         print("主循环错误:", e)
         time.sleep(5)
