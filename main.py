@@ -60,7 +60,7 @@ while True:
 
             print("状态:", score)
 
-            if true:
+            if ok:
                 send(f"🔥 云端信号\n数据：{data}\n状态：{score}\n建议：做（重仓）")
 
         time.sleep(15)
