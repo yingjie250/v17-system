@@ -11,15 +11,10 @@ last_data = None
 
 def send(msg):
     try:
-        print("准备发送:", msg)
         url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage"
-        res = requests.post(url, data={
-            "chat_id": CHAT_ID,
-            "text": msg
-        })
-        print("返回:", res.text)
-    except Exception as e:
-        print("发送失败:", e)
+        requests.post(url, data={"chat_id": CHAT_ID, "text": msg})
+    except:
+        pass
 
 def get_data():
     try:
@@ -28,8 +23,8 @@ def get_data():
         r = requests.get(url, headers=headers, timeout=10)
 
         text = r.text
-
         match = re.search(r'(\d)\+(\d)\+(\d)=', text)
+
         if match:
             return tuple(map(int, match.groups()))
     except:
@@ -51,12 +46,6 @@ def analyze(arr):
         return True, score
     return False, score
 
-print("✅ 程序启动成功（云端运行中）")
-
-last_data = None
-
-last_data = None
-
 print("系统启动成功")
 
 while True:
@@ -72,11 +61,6 @@ while True:
                 send(f"🔥信号\n数据:{data}\n评分:{score}")
 
         time.sleep(15)
-    except Exception as e:
-        print("主循环错误:", e)
+
+    except:
         time.sleep(5)
-send("🔥我活了🔥")
-print("BOT:", BOT_TOKEN)
-print("CHAT:", CHAT_ID)
-send("🔥启动成功🔥")
-print("已发送测试")
