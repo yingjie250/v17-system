@@ -1,3 +1,5 @@
+print("BOT:", BOT_TOKEN)
+print("CHAT:", CHAT_ID)
 import requests
 from bs4 import BeautifulSoup
 import time
